@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  background-color: #efefef;
+  min-height: 100vh;
+}
+
+#tableDiv::-webkit-scrollbar {
+  background: #fff;
+  width: 20px;
+  height: 20px;
+  border: 14px solid transparent;
+  outline: 0.25px solid transparent;
+}
+#tableDiv::-webkit-scrollbar-thumb {
+  /* background: rgb(96, 228, 131); */
+  background: linear-gradient(
+    90deg,
+    rgba(96, 228, 131, 1) 12%,
+    rgba(136, 136, 222, 1) 53%,
+    rgba(204, 107, 148, 1) 91%
+  );
+  border-radius: 30px;
+  padding: 18px;
+  border: 2px solid #fff;
+  cursor: pointer;
+}

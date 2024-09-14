@@ -10,6 +10,7 @@ export interface RequestOptions {
     | "OPTIONS"
     | "TRACE";
   redirect: RequestRedirect;
+  body?: string;
 }
 
 export interface Order {
@@ -113,6 +114,7 @@ export interface orderSummaryResponse {
   partial: number;
   avgTicket: number;
   refundedAmount: number;
+  frontendRefundPerc: number;
   creditCard: number;
   payPal: number;
 }

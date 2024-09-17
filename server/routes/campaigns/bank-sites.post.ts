@@ -10,11 +10,8 @@ const campaignCategoryId = campaignCategory[3];
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
 
-  // For Daily Report
-  if (!query.startDate || !query.endDate) {
-    query.startDate = "09/09/2024";
-    query.endDate = "09/10/2024";
-  }
+  // startDate and endDate
+  getReportDates(query);
 
   const orders = await $fetch<orderSummaryResponse>(
     `/reports/customers/order-summary/?startDate=${query.startDate}&endDate=${query.endDate}&id=${campaignCategoryId.id}`,
@@ -72,12 +69,7 @@ export default defineEventHandler(async (event) => {
   ];
 
   try {
-    let response;
-    if (query.type) {
-      response = await updateSheet(item, query.type);
-    } else {
-      response = await updateSheet(item);
-    }
+    let response = await updateSheet(item, query.type);
     return response;
   } catch (error) {
     return ["Error updating sheet:", error];

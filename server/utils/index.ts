@@ -16,8 +16,6 @@ export const filterOrdersByStatus = async (orders: Order[]) => {
   let ordersComplete: Order[] = [];
   let ordersRefunded: Order[] = [];
   let ordersCancelled: Order[] = [];
-  let ordersDeclined: Order[] = [];
-  let ordersPartial: Order[] = [];
   let totalOrderAmount = 0;
   let refundedOrderAmount = 0;
   let creditCardOrders = 0;
@@ -54,17 +52,9 @@ export const filterOrdersByStatus = async (orders: Order[]) => {
         payPalOrders++;
       }
     }
-    if (order.orderStatus === "DECLINED") {
-      ordersDeclined.push(order);
-    }
-    if (order.orderStatus === "PARTIAL") {
-      ordersPartial.push(order);
-    }
   });
 
   return {
-    ordersDeclined: ordersDeclined.length,
-    ordersPartial: ordersPartial.length,
     totalOrderAmount,
     refundedOrderAmount,
     creditCardOrders,
@@ -100,7 +90,7 @@ export const getCampaignIdById = (id: number) => {
   return category ? category.campaignId : null;
 };
 
-export const updateSheet = async (item, type = "daily") => {
+export const updateSheet = async (item, type) => {
   if (type === "front") return item;
 
   const requestOptions = {
@@ -118,4 +108,110 @@ export const updateSheet = async (item, type = "daily") => {
     });
 
   return ["Sheet updated successfully", item, response.data];
+};
+
+export const getReportDates = (query: {
+  startDate?: string;
+  endDate?: string;
+  type?: string;
+}) => {
+  if (query.type !== "daily") {
+    if (query.type === "front") return false;
+    const response: { startDate: string; endDate: string } = getStartAndEndDate(
+      query.type
+    );
+    query.startDate = response.startDate;
+    query.endDate = response.endDate;
+    return 1;
+  }
+  // Get current date and yesterday's date
+  const currentDate = new Date();
+  const yesterday = new Date(currentDate);
+  yesterday.setDate(currentDate.getDate() - 1);
+
+  // Set startDate as yesterday and endDate as today if not provided
+  if (!query.startDate) {
+    query.startDate = formatDate(yesterday);
+  }
+  if (!query.endDate) {
+    query.endDate = formatDate(currentDate);
+  }
+};
+
+const getStartAndEndDate = (
+  type: string
+): { startDate: string; endDate: string } | null => {
+  const today = new Date();
+  const isFirstDayOfMonth = today.getDate() === 1;
+
+  const formatDate = (date: Date): string => {
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    const yyyy = date.getFullYear();
+    return `${mm}/${dd}/${yyyy}`;
+  };
+
+  if (type === "monthly") {
+    // Check if today is the 1st day of the month
+    if (!isFirstDayOfMonth) {
+      // Handle January case: go to December of the previous year
+      const startDate =
+        today.getMonth() === 0
+          ? new Date(today.getFullYear() - 1, 11, 1) // 1st December of the previous year
+          : new Date(today.getFullYear(), today.getMonth() - 1, 1); // 1st day of the previous month;
+
+      // End date: 1st day of the current month
+      const endDate = new Date(today.getFullYear(), today.getMonth(), 1);
+
+      return { startDate: formatDate(startDate), endDate: formatDate(endDate) };
+    } else {
+      // If today is not the 1st of the month, return null
+      return null;
+    }
+  } else if (type === "quarterly") {
+    const month = today.getMonth(); // Current month (0-based, so Jan = 0)
+    const quarterStartMonth = Math.floor(month / 3) * 3; // Start of the current quarter
+
+    // Check if today is the 1st day of the quarter
+    const isFirstDayOfQuarter = isFirstDayOfMonth && month % 3 === 0;
+
+    if (!isFirstDayOfQuarter) {
+      // Special case for January: previous quarter is October - December of the previous year
+      if (month === 0) {
+        const startDate = new Date(today.getFullYear() - 1, 9, 1); // 1st October of the previous year
+        const endDate = new Date(today.getFullYear(), 0, 1); // 1st January of the current year
+
+        return {
+          startDate: formatDate(startDate),
+          endDate: formatDate(endDate),
+        };
+      }
+
+      // Otherwise, calculate previous quarter
+      const startDate = new Date(
+        today.getFullYear(),
+        quarterStartMonth - 3, // Previous quarter start month
+        1
+      );
+
+      // End date: 1st day of the current quarter
+      const endDate = new Date(today.getFullYear(), quarterStartMonth, 1);
+
+      return { startDate: formatDate(startDate), endDate: formatDate(endDate) };
+    } else {
+      // If today is not the 1st of the quarter, return null
+      return null;
+    }
+  }
+
+  // Default response when type doesn't match
+  return null;
+};
+
+// Function to format date as MM/DD/YYYY
+const formatDate = (date: Date): string => {
+  const mm = String(date.getMonth() + 1).padStart(2, "0"); // Get month, pad with leading zero if necessary
+  const dd = String(date.getDate()).padStart(2, "0"); // Get day, pad with leading zero if necessary
+  const yyyy = date.getFullYear(); // Get full year
+  return `${mm}/${dd}/${yyyy}`;
 };

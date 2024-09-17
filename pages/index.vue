@@ -1,7 +1,4 @@
 <script>
-// import axios from "axios";
-// import { delay } from "~/utils/delay";
-
 export default {
   data() {
     return {
@@ -28,24 +25,36 @@ export default {
     },
 
     async mLab() {
-     const resposne = await $fetch(`/campaigns/m-lab/?startDate=${this.startDate}&endDate=${this.endDate}&type=front`, requestOptionsFront);
-     this.campaignData.push(resposne);
-     return resposne
+      let resposne = await $fetch(
+        `/campaigns/m-lab/?startDate=${this.startDate}&endDate=${this.endDate}&type=front`,
+        requestOptionsFront
+      );
+      this.campaignData.push(resposne);
+      return resposne;
     },
     async checkoutChamp() {
-     const resposne = await $fetch(`/campaigns/checkout-champ/?startDate=${this.startDate}&endDate=${this.endDate}&type=front`, requestOptionsFront);
-     this.campaignData.push(resposne);
-     return resposne
+      const resposne = await $fetch(
+        `/campaigns/checkout-champ/?startDate=${this.startDate}&endDate=${this.endDate}&type=front`,
+        requestOptionsFront
+      );
+      this.campaignData.push(resposne);
+      return resposne;
     },
     async flexiHealth() {
-     const resposne = await $fetch(`/campaigns/flexi-health/?startDate=${this.startDate}&endDate=${this.endDate}&type=front`, requestOptionsFront);
-     this.campaignData.push(resposne);
-     return resposne
+      const resposne = await $fetch(
+        `/campaigns/flexi-health/?startDate=${this.startDate}&endDate=${this.endDate}&type=front`,
+        requestOptionsFront
+      );
+      this.campaignData.push(resposne);
+      return resposne;
     },
     async bankSites() {
-     const resposne = await $fetch(`/campaigns/bank-sites/?startDate=${this.startDate}&endDate=${this.endDate}&type=front`, requestOptionsFront);
-     this.campaignData.push(resposne);
-     return resposne
+      const resposne = await $fetch(
+        `/campaigns/bank-sites/?startDate=${this.startDate}&endDate=${this.endDate}&type=front`,
+        requestOptionsFront
+      );
+      this.campaignData.push(resposne);
+      return resposne;
     },
 
     // Formate date
@@ -79,6 +88,19 @@ export default {
       } else {
         this.endDate = value2;
       }
+    },
+    customDecryptArray(encryptedArray, key) {
+      return encryptedArray.map((encryptedItem) => {
+        // Decode the Base64 encoded string first
+        const decodedMessage = atob(encryptedItem);
+        let decrypted = "";
+        for (let i = 0; i < decodedMessage.length; i++) {
+          decrypted += String.fromCharCode(
+            decodedMessage.charCodeAt(i) ^ key.charCodeAt(i % key.length)
+          );
+        }
+        return decrypted;
+      });
     },
   },
   mounted() {},
@@ -142,45 +164,45 @@ export default {
           </tr>
         </thead>
         <tbody>
-        <tr
-          v-for="(row, rowIndex) in campaignData"
-          :key="rowIndex"
-          class="bg-white border-b hover:bg-gray-50"
-        >
-          <th
-            scope="row"
-            class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+          <tr
+            v-for="(row, rowIndex) in campaignData"
+            :key="rowIndex"
+            class="bg-white border-b hover:bg-gray-50"
           >
-            {{ row[0] }}
-          </th>
-          <td class="px-6 py-4">{{ row[1] }}</td>
-          <td class="px-6 py-4">{{ row[2] }}</td>
-          <td class="px-6 py-4">{{ row[3] }}</td>
-          <td class="px-6 py-4">{{ row[4] }}</td>
-          <td class="px-6 py-4">{{ row[5] }}</td>
-          <td class="px-6 py-4">{{ row[6] }}</td>
-          <td class="px-6 py-4">{{ row[7] }}</td>
-          <td class="px-6 py-4">{{ row[8] }}</td>
-          <td class="px-6 py-4">{{ row[9] }}</td>
-          <td class="px-6 py-4">{{ row[10] }}</td>
-          <td class="px-6 py-4">{{ row[11] }}</td>
-          <td class="px-6 py-4">{{ row[12] }}</td>
-          <td class="px-6 py-4">{{ row[13] }}</td>
-          <td class="px-6 py-4">{{ row[14] }}</td>
-          <td class="px-6 py-4">{{ row[15] }}</td>
-          <td class="px-6 py-4">{{ row[16] }}</td>
-          <td class="px-6 py-4">{{ row[17] }}</td>
-          <td class="px-6 py-4">{{ row[18] }}</td>
-          <td class="px-6 py-4">{{ row[19] }}</td>
-          <td class="px-6 py-4">{{ row[20] }}</td>
-          <td class="px-6 py-4">{{ row[21] }}</td>
-          <td class="px-6 py-4">{{ row[22] }}</td>
-          <td class="px-6 py-4">{{ row[23] }}</td>
-          <td class="px-6 py-4">{{ row[24] }}</td>
-          <td class="px-6 py-4">{{ row[25] }}</td>
-          <td class="px-6 py-4">{{ row[26] }}</td>
-        </tr>
-      </tbody>
+            <th
+              scope="row"
+              class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+            >
+              {{ row[0] }}
+            </th>
+            <td class="px-6 py-4">{{ row[1] }}</td>
+            <td class="px-6 py-4">${{ row[2] }}</td>
+            <td class="px-6 py-4">{{ row[3] }}</td>
+            <td class="px-6 py-4">{{ row[4] }}</td>
+            <td class="px-6 py-4">{{ row[5] * 100 }}%</td>
+            <td class="px-6 py-4">{{ row[6] }}</td>
+            <td class="px-6 py-4">${{ row[7] }}</td>
+            <td class="px-6 py-4">${{ row[8] }}</td>
+            <td class="px-6 py-4">{{ row[9] * 100 }}%</td>
+            <td class="px-6 py-4">${{ row[10] }}</td>
+            <td class="px-6 py-4">${{ row[11] }}</td>
+            <td class="px-6 py-4">${{ row[12] }}</td>
+            <td class="px-6 py-4">{{ (row[13] * 100).toFixed(2) }}%</td>
+            <td class="px-6 py-4">{{ row[14] * 100 }}%</td>
+            <td class="px-6 py-4">{{ row[15] }}</td>
+            <td class="px-6 py-4">{{ row[16] }}</td>
+            <td class="px-6 py-4">{{ row[17] }}</td>
+            <td class="px-6 py-4">{{ row[18] }}</td>
+            <td class="px-6 py-4">{{ row[19] * 100 }}%</td>
+            <td class="px-6 py-4">{{ row[20] }}</td>
+            <td class="px-6 py-4">{{ row[21] }}</td>
+            <td class="px-6 py-4">{{ row[22] }}</td>
+            <td class="px-6 py-4">{{ row[23] * 100 }}%</td>
+            <td class="px-6 py-4">{{ (row[24] * 100).toFixed(2) }}%</td>
+            <td class="px-6 py-4">{{ row[25] }}</td>
+            <td class="px-6 py-4">{{ row[26] }}</td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </main>

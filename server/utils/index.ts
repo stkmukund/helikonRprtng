@@ -91,6 +91,11 @@ export const getCampaignIdById = (id: number) => {
 };
 
 export const updateSheet = async (item, type) => {
+  const secretKey = "darkAngle";
+  let testData = convertToStringArray(item);
+  let encrytData = customEncryptArray(testData, secretKey);
+  let decryptData = customDecryptArray(encrytData, secretKey);
+
   if (type === "front") return item;
 
   const requestOptions = {
@@ -215,3 +220,55 @@ const formatDate = (date: Date): string => {
   const yyyy = date.getFullYear(); // Get full year
   return `${mm}/${dd}/${yyyy}`;
 };
+
+function customEncryptArray(
+  message: (string | number)[],
+  key: string
+): string[] {
+  return message.map((item) => {
+    const str = item.toString(); // Convert the item to a string if it's not already
+    let encrypted = "";
+    for (let i = 0; i < str.length; i++) {
+      encrypted += String.fromCharCode(
+        str.charCodeAt(i) ^ key.charCodeAt(i % key.length)
+      );
+    }
+
+    // Encode the XOR result to Base64 for safe transmission
+    // Convert the encrypted string to a Uint8Array first
+    const binaryString = unescape(encodeURIComponent(encrypted)); // Encode as UTF-8
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    // Convert Uint8Array to Base64 string
+    const base64String = btoa(String.fromCharCode.apply(null, bytes));
+    return base64String;
+  });
+}
+
+export const customDecryptArray = (
+  encryptedArray: string[],
+  key: string
+): (string | number)[] => {
+  return encryptedArray.map((encryptedItem) => {
+    // Decode the Base64 encoded string first
+    const decodedMessage = atob(encryptedItem);
+    let decrypted = "";
+    for (let i = 0; i < decodedMessage.length; i++) {
+      decrypted += String.fromCharCode(
+        decodedMessage.charCodeAt(i) ^ key.charCodeAt(i % key.length)
+      );
+    }
+    return decrypted;
+  });
+};
+
+function convertToStringArray(mixedArray: (string | number)[]) {
+  let stringArray: (string | number)[] = [];
+  mixedArray.map((item) => {
+    stringArray.push(item.toString());
+  });
+
+  return stringArray;
+}

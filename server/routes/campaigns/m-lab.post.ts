@@ -1,4 +1,8 @@
-import { getReportDates, requestOptions } from "~/server/utils";
+import {
+  customEncryptArray,
+  getReportDates,
+  requestOptions,
+} from "~/server/utils";
 import {
   orderSummaryResponse,
   salesContinuityResponse,

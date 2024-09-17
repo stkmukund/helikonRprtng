@@ -46,6 +46,7 @@ export default defineEventHandler(async (event) => {
       }
 
       page = 1;
+      count = 1;
 
       return totalAmount;
     } catch (error) {}
@@ -75,6 +76,7 @@ export default defineEventHandler(async (event) => {
       }
 
       page = 1;
+      count = 1;
 
       return totalAmount;
     } catch (error) {}
@@ -105,6 +107,7 @@ export default defineEventHandler(async (event) => {
       }
 
       page = 1;
+      count = 1;
 
       return totalAmount;
     } catch (error) {}
